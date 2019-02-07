@@ -4,20 +4,18 @@ import datetime
 import holidays
 import os
 import json
-
 import hmac
-from hashlib import sha1
-from lxml import html
-
 import rethinkdb as r
-
 import configparser
 
+from hashlib import sha1
+from lxml import html
 from bdateutil import relativedelta
-
-from .connections import get_rethink_connection
-
 from pytz import timezone
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from connections import get_rethink_connection
 
 def is_empty(path):
 	return os.stat(path).st_size==0
