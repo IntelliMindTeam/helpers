@@ -12,7 +12,7 @@ import time
 from datetime import datetime
 from time import mktime
 
-from utils import get_today
+from icalendar import get_today
 
 logger = logging.getLogger('datafeed')
 
@@ -44,7 +44,7 @@ def fetch_table_data(url, table_id=None):
 	try:
 		resp = urlopen(url)
 	except URLError as e:
-		print 'An error occured fetching %s \n %s' % (url, e.reason)
+		print('An error occured fetching %s \n %s' % (url, e.reason))
 		return 1
 
 	soup = BeautifulSoup(resp.read())
@@ -64,7 +64,7 @@ def fetch_table_data_advanced(url, table_id=None, lastUpdated=None, totalPages=N
 	try:
 		resp = urlopen(url)
 	except URLError as e:
-		print 'An error occured fetching %s \n %s' % (url, e.reason)
+		print('An error occured fetching %s \n %s' % (url, e.reason))
 		return 1
 
 	soup = BeautifulSoup(resp.read())
@@ -84,7 +84,7 @@ def fetch_table_data_advanced(url, table_id=None, lastUpdated=None, totalPages=N
 				end_pos = position + END_OFFSET
 				result = soup.text[start_pos:end_pos]
 				last_updated_dt = str(parse(result.strip()).date())
-	except Exception, ex:
+	except Exception as ex:
 		logger.error('Exception in parsing last updated dt %s' % str(ex.args))
 
 
@@ -100,7 +100,7 @@ def fetch_header(url, header):
 	try:
 		resp = urlopen(url)
 	except URLError as e:
-		print 'An error occured fetching %s \n %s' % (url, e.reason)
+		print('An error occured fetching %s \n %s' % (url, e.reason))
 		return 1
 
 	soup = BeautifulSoup(resp.read())
@@ -141,7 +141,7 @@ def fetch_table_by_class_ex(url, class_name):
 		soup = BeautifulSoup(resp.text)
 		
 	except URLError as e:
-		print 'An error occured fetching %s \n %s' % (url, e.reason)
+		print('An error occured fetching %s \n %s' % (url, e.reason))
 		return 1
 
 	# find table by class

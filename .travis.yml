@@ -1,0 +1,24 @@
+language: python
+sudo: required
+python:
+- "3.6"
+cache:
+ directories:
+ - "$HOME/.cache/pip"
+install:
+- pip install -r common_utils/requirements.txt
+script:
+- nosetests -sv common_utils/test
+before-install:
+- sudo apt-get update
+- sudo apt-get install -qq poppler-utils
+- sudo apt-get install -qq djvulibre-bin
+- sudo apt-get install python-poppler
+- sudo apt-get install build-essential libpoppler-cpp-dev pkg-config python-dev
+- sudo apt-get install libcurl4-openssl-dev
+notifications:
+  email:
+    recipients:
+      - alert@intellimind.io
+    on_success: never # default: change
+    on_failure: always # default: always
