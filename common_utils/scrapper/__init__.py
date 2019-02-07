@@ -12,7 +12,7 @@ import time
 from datetime import datetime
 from time import mktime
 
-from utils import get_today
+from icalendar import get_today
 
 logger = logging.getLogger('datafeed')
 

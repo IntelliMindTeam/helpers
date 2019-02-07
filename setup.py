@@ -1,14 +1,26 @@
 import setuptools
 
-with open("README.md", "r") as fp:
+# adding README data as a long description
+with open('README.md', 'r') as fp:
     long_description = fp.read()
 
+# getting all requirements from package
+requirements_path = 'common_utils/requirements.txt'
+requirements = []
+
+with open(requirements_path, 'r') as fp:
+    for line in fp:
+        line = line.strip()
+        if line.startswith('#'):
+            continue
+        requirements.append(line.strip())
+
 setuptools.setup(
-    name="common_utils_rajan shah",
+    name="common_utils",
     version="0.0.1",
-    author="Rajan Shah",
-    author_email="rajan@intellimind.io",
-	license="MIT",
+    author="Rajat Movaliya",
+    author_email="hello@intellimind.io",
+	license="Intellimind",
     description="general-utilities",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -16,40 +28,13 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3.6",
-        "License :: MIT",
+        "License :: Intellimind",
         "Operating System :: OS Independent",
     ],
-	install_requires=[
-        'argparse',
-        'arctic',
-        'boto3',
-        'bs4',
-        'csv',
-        'datetime',
-        'dateutil'
-        'hashlib'
-        'holidays'
-        'hmac'
-        'influxdb'
-        'json',
-        'logging',
-        'lxml'
-        'mock'
-        'nltk'
-        'pandas'
-        'pymysql',
-        'redis'
-        'rethinkdb',
-        'requests'
-        'urllib2'
-        'socket'
-        'string'
-        'sklearn',
-        
-        ],
+	install_requires=requirements,
     dependency_links=[
         # link of pip installation from github without git+
-        ],
-
+    ],
+    include_package_data=True,
 )
 

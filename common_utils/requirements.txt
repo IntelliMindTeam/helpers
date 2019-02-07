@@ -1,0 +1,13 @@
+argparse
+arctic
+boto3
+beautifulsoup4
+holidays
+lxml
+mock
+pandas
+pymysql
+redis
+rethinkdb
+requests
+influxdb

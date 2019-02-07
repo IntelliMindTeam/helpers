@@ -12,7 +12,6 @@ def normalize(text):
 	''' remove punctuation, lowercase, stem'''
 	return stem_tokens(nltk.word_tokenize(text.lower().translate(remove_punctuation_map)))
 
-
 def cosine_sim(text1, text2):
 	''' cosine sim between two texts '''
 	vectorizer = TfidfVectorizer(tokenizer=normalize, stop_words='english')
