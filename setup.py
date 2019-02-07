@@ -5,7 +5,7 @@ with open('README.md', 'r') as fp:
     long_description = fp.read()
 
 # getting all requirements from package
-requirements_path = 'common_utils/requirements.txt'
+requirements_path = 'helpers/requirements.txt'
 requirements = []
 
 with open(requirements_path, 'r') as fp:
@@ -16,7 +16,7 @@ with open(requirements_path, 'r') as fp:
         requirements.append(line.strip())
 
 setuptools.setup(
-    name="common_utils",
+    name="helpers",
     version="0.0.1",
     author="Rajat Movaliya",
     author_email="hello@intellimind.io",

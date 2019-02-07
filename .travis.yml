@@ -6,9 +6,9 @@ cache:
  directories:
  - "$HOME/.cache/pip"
 install:
-- pip install -r common_utils/requirements.txt
+- pip install -r helpers/requirements.txt
 script:
-- nosetests -sv common_utils/test
+- nosetests -sv helpers/test
 before-install:
 - sudo apt-get update
 - sudo apt-get install -qq poppler-utils
