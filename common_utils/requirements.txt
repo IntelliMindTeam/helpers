@@ -1,13 +1,14 @@
 argparse
 arctic
 boto3
-python-dateutil
+bdateutil
 beautifulsoup4
 holidays
 lxml
 mock
 pandas
 pymysql
+python-dateutil
 redis
 rethinkdb
 requests
