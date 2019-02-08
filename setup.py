@@ -20,7 +20,7 @@ setuptools.setup(
     version="0.0.1",
     author="Intellimind",
     author_email="hello@intellimind.io",
-	license="Intellimind",
+	license="MIT",
     description="general-utilities",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -28,7 +28,7 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3.6",
-        "License :: Intellimind",
+        "License :: MIT",
         "Operating System :: OS Independent",
     ],
 	install_requires=requirements,
