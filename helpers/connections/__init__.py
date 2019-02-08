@@ -2,9 +2,6 @@ import arctic
 import pymysql
 import rethinkdb as r
 
-#from influxdb.influxdb08 import DataFrameClient
-from influxdb import DataFrameClient
-
 def get_arctic_store(config):
 	''' get arctic connection '''
 
@@ -28,25 +25,3 @@ def get_rethink_connection(props):
 								password=props.get('RETHINKDB', 'RETHINK_PASSWORD'),\
 								timeout=int(props.get('RETHINKDB', 'RETHINK_TIMEOUT')))
 	return rethink_conn
-
-def get_dataframe_client(props):
-	''' get influx db connection '''
-
-	user = props.get('INFLUXDB', 'INFLUX_USERNAME')
-	password = props.get('INFLUXDB', 'INFLUX_PASSWORD')
-	host = props.get('INFLUXDB', 'INFLUX_SERVER')
-	port = props.get('INFLUXDB', 'INFLUX_PORT')
-	dbname = props.get('INFLUXDB', 'INFLUX_DATABASE')
-
-	return DataFrameClient(host, port, user, password, dbname)
-
-def get_dataframe_hist_client(props):
-	''' get influx db connection '''
-
-	user = props.get('INFLUXDB', 'INFLUX_USERNAME')
-	password = props.get('INFLUXDB', 'INFLUX_PASSWORD')
-	host = props.get('INFLUXDB', 'INFLUX_SERVER')
-	port = props.get('INFLUXDB', 'INFLUX_PORT')
-	dbname = props.get('INFLUXDB', 'HISTORICAL_DB')
-
-	return DataFrameClient(host, port, user, password, dbname)
