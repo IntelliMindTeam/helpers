@@ -18,13 +18,13 @@ with open(requirements_path, 'r') as fp:
 setuptools.setup(
     name="helpers",
     version="0.0.1",
-    author="Rajat Movaliya",
+    author="Intellimind",
     author_email="hello@intellimind.io",
 	license="Intellimind",
     description="general-utilities",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/IntelliMindTeam/common-utils.git",
+    url="https://github.com/IntelliMindTeam/helpers.git",
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3.6",
