@@ -16,8 +16,6 @@ It will return today's date adjusted with given year, month, and day
 * **get_mysql_connection(config)**
 * **get_arctic_store(config)**
 * **get_rethink_connection(config)**
-* **get_dataframe_client(config)**
-* **get_dataframe_hist_client(config)**
 
 ### aws.s3
 * **upload_to_s3(bucket_name, local_source_path, remote_target_path, is_dir=False)**
