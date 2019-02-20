@@ -1,10 +1,10 @@
 import os
 import sys
 import csv
+import shutil
 
 def list_files(root_dir):
 	return [os.path.join(x[0],y) for x in os.walk(root_dir) for y in x[2]]
-
 
 def read_csv_file(file_path):
 	with open(file_path) as csv_file:
@@ -19,6 +19,11 @@ def read_csv_dict_file(file_path):
 			for row in reader:
 				yield row
 
-
 def is_empty(path):
 	return os.stat(path).st_size==0
+
+def remove_directory(dir_path):
+	''' remove directory recursively '''
+
+	if os.path.exists(dir_path):
+		shutil.rmtree(dir_path, ignore_errors=True)

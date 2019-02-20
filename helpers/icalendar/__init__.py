@@ -32,3 +32,22 @@ def adjust_today(y, m, d):
 		raise Exception('invalid offset')	
 
 	return adjusted_date
+
+
+def get_duration_in_weeks_from_dt(duration, end_date):
+	''' get start, end date for a week '''
+
+	today = end_date
+	no_of_days = duration * 5 if duration > 0 else 2
+	end_day = today + relativedelta(bdays=-1,  holidays=holidays.US())
+	start_day = today + relativedelta(bdays=-1 * no_of_days,  holidays=holidays.US())
+	return (str(start_day), str(end_day))
+
+def get_duration_in_weeks(duration):
+	''' get start, end date for a week '''
+
+	today = get_today()
+	no_of_days = duration * 5 if duration > 0 else 2
+	end_day = today + relativedelta(bdays=-1,  holidays=holidays.US())
+	start_day = today + relativedelta(bdays=-1 * no_of_days,  holidays=holidays.US())
+	return (str(start_day), str(end_day))
