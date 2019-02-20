@@ -5,7 +5,6 @@ import csv
 def list_files(root_dir):
 	return [os.path.join(x[0],y) for x in os.walk(root_dir) for y in x[2]]
 
-
 def read_csv_file(file_path):
 	with open(file_path) as csv_file:
 		csvreader = csv.reader(csv_file)
@@ -19,6 +18,13 @@ def read_csv_dict_file(file_path):
 			for row in reader:
 				yield row
 
-
 def is_empty(path):
 	return os.stat(path).st_size==0
+
+def removeDirectory(dirPath):
+	''' remove directory recursively '''
+	try:
+		if os.path.exists(dirPath):
+			shutil.rmtree(dirPath, ignore_errors=True)
+	except Exception as ex:
+		logging.error('Error deleting path:%s-%s' % (dirPath, str(ex.args)))
