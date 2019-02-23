@@ -106,7 +106,7 @@ class TestAwsS3(unittest.TestCase):
 
 		mock_upload_to_s3.assert_called_with(
 			bucket_name,
-			sub_dir_path + '.zip',
+			sub_dir_path + '.tar.gz',
 			s3_remote_path,
 		)
 
@@ -128,6 +128,6 @@ class TestAwsS3(unittest.TestCase):
 
 		mock_upload_to_s3.assert_called_with(
 			bucket_name,
-			sub_dir_path + '.zip',
+			sub_dir_path + '.tar.gz',
 			remote_path,
 		)
