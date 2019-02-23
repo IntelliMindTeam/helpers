@@ -2,15 +2,18 @@ import boto3
 import logging
 import os
 import sys
+import shutil
+import datetime
 
 def upload_to_s3(bucket_name, local_source_path, remote_target_path, is_dir=False):
-	''' Uploading given file to s3 bucket
+	''' Uploading given file or dir to s3 bucket'
 
-		Parametes :
-		-- local_source_path : local path of file or files in directory for input
-		-- remote_target_path : remote s3 bucket path of file / directory to store
-		-- bucekt_name : name of bucket in s3 that should exist
-		-- is_dir : is given local_source path is of directory ? (True / False)
+		Parameters :
+
+		local_source_path : local path of file or files in directory for input
+		remote_target_path : remote s3 bucket path of file / directory to store
+		bucekt_name : name of bucket in s3 that should exist
+		is_dir : is given local_source path is of directory ? (True / False)
 	'''
 
 	client = boto3.client('s3')
@@ -61,3 +64,49 @@ def upload_to_s3(bucket_name, local_source_path, remote_target_path, is_dir=Fals
 			raise Exception('Error while uploading file - {} :: {}'.format(\
 				local_source_path, ex))
 
+def backup_to_s3(bucket_name, source_dir, dest_dir, format='%Y-%m-%d', sub_dir=None):
+	'''
+		To create zipped s3-backup of sub-directory that has name as todays's date
+
+		Parameters:
+
+		bucket_name : name of the s3-bucket
+		source_dir : local source directory path
+		dest_dir : remote destination directory path
+		format : local sub-directory naming format
+		sub_dir	: sub-directory to be zipped 
+				  (default sub_dir will be of today's date name)
+
+	'''
+
+	if not sub_dir:
+		# default sub_dir as of today's date
+		try:
+			sub_dir = datetime.datetime.now().strftime(format)
+		except:
+			raise Exception('invalid date-format')
+
+	source_dir_path = os.path.join(source_dir, sub_dir)
+	if not os.path.exists(source_dir_path):
+		return
+
+	# create local archive
+	shutil.make_archive(source_dir_path, 'zip', source_dir_path)
+	local_source_path = '{}.zip'.format(source_dir_path)
+
+	# creating remote path
+	try:
+		dir_date = datetime.datetime.strptime(sub_dir, format)
+	except:
+		raise Exception('invalid date formate of sub-directory')
+
+	remote_target_path = os.path.join(
+		dest_dir,
+		str(dir_date.year),
+		str(dir_date.month),
+	)
+
+	upload_to_s3(bucket_name, local_source_path, remote_target_path)
+
+	# removing zip file
+	os.remove(local_source_path)
