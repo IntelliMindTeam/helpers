@@ -91,8 +91,8 @@ def backup_to_s3(bucket_name, source_dir, dest_dir, format='%Y-%m-%d', sub_dir=N
 		return
 
 	# create local archive
-	shutil.make_archive(source_dir_path, 'zip', source_dir_path)
-	local_source_path = '{}.zip'.format(source_dir_path)
+	shutil.make_archive(source_dir_path, 'gztar', source_dir_path)
+	local_source_path = '{}.tar.gz'.format(source_dir_path)
 
 	# creating remote path
 	try:
