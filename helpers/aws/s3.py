@@ -81,7 +81,10 @@ def backup_to_s3(bucket_name, source_dir, dest_dir, format='%Y-%m-%d', sub_dir=N
 
 	if not sub_dir:
 		# default sub_dir as of today's date
-		sub_dir = datetime.datetime.now().strftime(format)
+		try:
+			sub_dir = datetime.datetime.now().strftime(format)
+		except:
+			raise Exception('invalid date-format')
 
 	source_dir_path = os.path.join(source_dir, sub_dir)
 	if not os.path.exists(source_dir_path):
@@ -92,7 +95,11 @@ def backup_to_s3(bucket_name, source_dir, dest_dir, format='%Y-%m-%d', sub_dir=N
 	local_source_path = '{}.zip'.format(source_dir_path)
 
 	# creating remote path
-	dir_date = datetime.datetime.strptime(sub_dir, format)
+	try:
+		dir_date = datetime.datetime.strptime(sub_dir, format)
+	except:
+		raise Exception('invalid date formate of sub-directory')
+
 	remote_target_path = os.path.join(
 		dest_dir,
 		str(dir_date.year),
