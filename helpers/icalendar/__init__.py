@@ -51,3 +51,10 @@ def get_duration_in_weeks(duration):
 	end_day = today + relativedelta(bdays=-1,  holidays=holidays.US())
 	start_day = today + relativedelta(bdays=-1 * no_of_days,  holidays=holidays.US())
 	return (str(start_day), str(end_day))
+
+def get_last_business_day():
+	''' get last business day '''
+
+	today = get_today()
+	prior_day = today + relativedelta(bdays=-2,  holidays=holidays.US())
+	return str(prior_day)
