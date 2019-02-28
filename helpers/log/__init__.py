@@ -9,6 +9,13 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from context_filter import ContextFilter
 
+logging.basicConfig(stream=sys.stdout)
+mylogger = logging.getLogger('log')
+mylogger.setLevel(logging.INFO)
+
+#...............................................#
+# Formatters #
+
 def get_generic_formatter():
 	''' returns generic formatting '''
 	hostname = socket.gethostname() if socket.gethostname() else socket.getfqdn()
@@ -24,18 +31,55 @@ def get_formatter(format_type):
 	}
 	return formatter_mapping[format_type]()
 
-def add_papertrail_log_handler(config, logger, formatter):
+#.................................................#
+# Log Handlers #
+
+def add_papertrail_handler(logger, level, config=None, formatter=None):
 	''' adding paper trail log handler '''
 
-	log_server = config.get('PAPERTRAIL', 'LOG_SERVER')
-	log_port = int(config.get('PAPERTRAIL', 'LOG_PORT'))
+	# skip if config error
+	if not config:
+		return
 
-	syslog = SysLogHandler(address=(log_server, log_port))
-	syslog.setFormatter(formatter)
+	try:
+		log_server = config.get('PAPERTRAIL', 'LOG_SERVER')
+		log_port = int(config.get('PAPERTRAIL', 'LOG_PORT'))
+	except Exception as ex:
+		mylogger.info(\
+			'Could not find papertrail config while logger setup...%s'\
+			% str(ex))
 
-	logger.addHandler(syslog)
+	syslog_handler = SysLogHandler(address=(log_server, log_port))
+	syslog_handler.setLevel(level)
+	syslog_handler.setFormatter(formatter) if formatter else None
 
-def get_logger(config, app_name='app', level='INFO', format_type='generic'):
+	logger.addHandler(syslog_handler)
+
+def add_console_handler(logger, level, formatter=None):
+	''' adding console handler '''
+
+	console_handler = logging.StreamHandler(sys.stdout)
+	console_handler.setLevel(level)
+	console_handler.setFormatter(formatter) if formatter else None
+
+	logger.addHandler(console_handler)
+
+def add_file_handler(logger, level, file_name=None, formatter=None):
+	''' adding file handler '''
+
+	if not file_name:
+		return
+
+	file_handler = logging.FileHandler(file_name)
+	file_handler.setLevel(level)
+	file_handler.setFormatter(formatter) if formatter else None
+
+	logger.addHandler(file_handler)
+
+#...........................................................#
+
+def get_logger(app_name='app', config=None, level='INFO', \
+	file_name=None, format_type='generic'):
 	''' setting up logger '''
 
 	level_mapping = {
@@ -50,14 +94,18 @@ def get_logger(config, app_name='app', level='INFO', format_type='generic'):
 	level = level_mapping[level]
 	formatter = get_formatter(format_type)
 
-	logging.basicConfig(level=level, stream=sys.stdout)
-
 	# getting main logger
 	logger = logging.getLogger(app_name)
 	logger.setLevel(level)
 	logger.addFilter(ContextFilter())
 
 	# adding various subscribers to log stream
-	add_papertrail_log_handler(config, logger, formatter)
+	try:
+		#add_console_handler(logger, level, formatter=None)
+		add_file_handler(logger, level, file_name, formatter=formatter)
+		add_papertrail_handler(logger, level, config, formatter=formatter)
+	except Exception as ex:
+		mylogger.info(\
+			'Exception while adding log handler %s' % str(ex))
 
 	return logger
