@@ -55,15 +55,6 @@ def add_papertrail_handler(logger, level, config=None, formatter=None):
 
 	logger.addHandler(syslog_handler)
 
-def add_console_handler(logger, level, formatter=None):
-	''' adding console handler '''
-
-	console_handler = logging.StreamHandler(sys.stdout)
-	console_handler.setLevel(level)
-	console_handler.setFormatter(formatter) if formatter else None
-
-	logger.addHandler(console_handler)
-
 def add_file_handler(logger, level, file_name=None, formatter=None):
 	''' adding file handler '''
 
@@ -101,7 +92,6 @@ def get_logger(app_name='app', config=None, level='INFO', \
 
 	# adding various subscribers to log stream
 	try:
-		#add_console_handler(logger, level, formatter=None)
 		add_file_handler(logger, level, file_name, formatter=formatter)
 		add_papertrail_handler(logger, level, config, formatter=formatter)
 	except Exception as ex:
