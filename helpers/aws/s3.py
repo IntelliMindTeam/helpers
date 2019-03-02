@@ -110,3 +110,15 @@ def backup_to_s3(bucket_name, source_dir, dest_dir, format='%Y-%m-%d', sub_dir=N
 
 	# removing zip file
 	os.remove(local_source_path)
+
+
+
+def download_from_s3(bucket_name, start_date, end_date):
+	''' It will download files from s3 bucket
+		by filtering with date-range
+		format : YYYY-mm-dd
+	'''
+
+	base = datetime.datetime.strptime(start_date)
+	date_list = [base - datetime.timedelta(days=x) for x in range(0, numdays)]
+
