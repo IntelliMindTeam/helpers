@@ -149,7 +149,7 @@ def get_matching_s3_keys(bucket, prefix='', suffix=''):
 			break
 
 def get_file_paths(remote_source_dir, start_date, end_date,\
-	date_format, suffix):
+	date_format='%Y-%m-%d', suffix='.tar.gz'):
 	''' It will yield final file paths '''
 
 	# extracting all dates between given range
