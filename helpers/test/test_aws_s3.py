@@ -131,3 +131,23 @@ class TestAwsS3(unittest.TestCase):
 			sub_dir_path + '.tar.gz',
 			remote_path,
 		)
+
+	def test_get_file_paths(self):
+		''' To test generation of file paths from date range '''
+
+		kargs = {
+			'remote_source_dir': '/test',
+			'start_date': '2015-12-30',
+			'end_date': '2016-01-1'
+		}
+
+		expected_res = [
+			'/test/2015/12/2015-12-30.tar.gz',
+			'/test/2015/12/2015-12-31.tar.gz',
+			'/test/2016/1/2016-01-01.tar.gz'
+		]
+
+		res = aws_s3.get_file_paths(**kargs)
+		# taking all output at once as it is generator
+		res = list(res)
+		self.assertEqual(res, expected_res)
