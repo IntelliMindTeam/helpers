@@ -5,6 +5,8 @@ import shutil
 import sys
 import unittest
 
+from bdateutil import relativedelta
+
 from mock import patch, MagicMock, call
 from tempfile import mkdtemp
 
@@ -76,3 +78,30 @@ class TestCalendar(unittest.TestCase):
 		for _ in range(len(input_dates)):
 			res = icalendar.get_last_business_day()
 			response_dates.append(res)
+
+	@patch('icalendar.get_today')
+	def test_get_period(self, patched_today):
+		''' To test get period '''
+
+		# yyyy-mm-dd
+		input_dates = [
+			datetime.date(year=2008, month=1, day=2),	# new year + 1 day
+			datetime.date(year=2010, month=12, day=26),	# christmas day + 1 day
+			datetime.date(year=2010, month=10, day=15),	# not holiday + 1 day
+		]
+
+		expected_dates = [
+			'2007-12-30',	# new year - 2 day
+			'2010-12-22',	# christmas day - 2 day
+			'2010-10-13'	# previous business day
+		]
+
+		patched_today.side_effect = input_dates
+
+		response_dates = []
+		res = icalendar.get_period(1, 1, 'days')
+		res = icalendar.get_period(1, 1, 'months')
+		res = icalendar.get_period(1, 2, 'weeks')
+
+		import ipdb
+		ipdb.set_trace()

@@ -69,3 +69,25 @@ def get_last_business_day():
 	today = get_today()
 	prior_day = today + relativedelta(bdays=-2,  holidays=holidays.US())
 	return str(prior_day)
+
+def get_period(duration, period, units):
+	''' 
+		get period
+		duration = period in days
+		period = period
+		units = ( days | months | weeks )
+	'''
+
+	today = get_today()
+	end_date = get_today()
+
+	if units == 'days':
+		start_date = end_date + relativedelta(bdays=period * duration, holidays=holidays.US())
+
+	elif units == 'months':
+		start_date = end_date + relativedelta(bdays=period * 20, holidays=holidays.US())
+
+	elif units == 'weeks':
+		start_date = end_date + relativedelta(bdays=period * 5, holidays=holidays.US())
+
+	return str(start_date), str(end_date)
