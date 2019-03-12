@@ -6,6 +6,17 @@ from bdateutil import relativedelta
 
 from pytz import timezone
 
+def get_first_day_of_month():
+	''' get first day of month '''
+
+	todayDate = datetime.date.today()
+
+	if todayDate.day > 25:
+		todayDate += datetime.timedelta(7)
+
+	first_date = todayDate.replace(day=1)
+	return str(first_date)
+
 def get_today():
 	''' get today '''
 
