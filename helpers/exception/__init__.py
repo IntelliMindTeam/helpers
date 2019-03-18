@@ -15,7 +15,7 @@ def exception_handler(return_if_exception=None):
 		----------------------------------------------------------
 		# return empty list if any exception occur o/w normal flow
 
-		@exception_handler(return_if_exception=[])
+		@exception_handler([])
 		def my_func(a, b):
 			...
 			...
