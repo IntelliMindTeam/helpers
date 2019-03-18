@@ -24,7 +24,7 @@ def exception_handler(return_if_exception=None):
 
 			except Exception as ex:
 				response = return_if_exception
-				logger.error('Error in {} , args : {} {} :: {}'.format(\
+				logger.error('Error in {}() func , args : {} {} :: {}'.format(\
 					method.__name__, args, kargs, str(ex)))
 			finally:
 				return response
