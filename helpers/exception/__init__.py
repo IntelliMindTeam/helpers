@@ -20,10 +20,20 @@ def exception_handler(return_if_exception=None):
 			...
 			...
 		----------------------------------------------------------
-		Note: If any exception occur during function run, it will be handled by
-		this decorator, logged appropriately and
-		return value as you specified in argument, (only if any exception)
-		default will be None
+		# return None (default) if any exception occur o/w normal flow
+
+		@exception_handler
+		def my_func(a, b):
+			...
+			...
+		---------------------------------------------------------
+
+		Note: If any exception occur during function run, it will be
+		* handled by decorator
+		* logged appropriately
+		* return value as you specified in argument
+
+		* If no error occur then there will be normal flow as expected
 
 	'''
 
