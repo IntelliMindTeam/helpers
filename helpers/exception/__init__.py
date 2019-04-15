@@ -22,7 +22,7 @@ def exception_handler(return_if_exception=None):
 		----------------------------------------------------------
 		# return None (default) if any exception occur o/w normal flow
 
-		@exception_handler
+		@exception_handler()
 		def my_func(a, b):
 			...
 			...
