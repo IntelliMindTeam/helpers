@@ -90,18 +90,20 @@ class TestCalendar(unittest.TestCase):
 			datetime.date(year=2010, month=10, day=15),	# not holiday + 1 day
 		]
 
-		expected_dates = [
-			'2007-12-30',	# new year - 2 day
-			'2010-12-22',	# christmas day - 2 day
-			'2010-10-13'	# previous business day
+		expected_res = [
+			'2008-01-03',
+			'2011-01-25',
+			'2010-10-29',
 		]
 
 		patched_today.side_effect = input_dates
 
-		response_dates = []
-		res = icalendar.get_period(1, 1, 'days')
-		res = icalendar.get_period(1, 1, 'months')
-		res = icalendar.get_period(1, 2, 'weeks')
+		res = []
+		res = [
+			icalendar.get_period(1, 1, 'days'),
+			icalendar.get_period(1, 1, 'months'),
+			icalendar.get_period(1, 2, 'weeks'),
+		]
 
-		import ipdb
-		ipdb.set_trace()
+		res = [str(start_date) for start_date, end_date in res]
+		self.assertEqual(res, expected_res)

@@ -3,7 +3,7 @@ import holidays
 import os
 
 from bdateutil import relativedelta
-
+from datetime import timedelta
 from pytz import timezone
 
 def get_first_day_of_month():
@@ -38,6 +38,7 @@ def adjust_today(y, m, d):
 
 	# adjust according to delta
 	try:
+		
 		adjusted_date = datetime.date(dt.year + y, dt.month + m , dt.day + d)
 	except:
 		raise Exception('invalid offset')	
@@ -78,7 +79,6 @@ def get_period(duration, period, units):
 		units = ( days | months | weeks )
 	'''
 
-	today = get_today()
 	end_date = get_today()
 
 	if units == 'days':

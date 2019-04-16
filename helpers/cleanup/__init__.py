@@ -1,3 +1,8 @@
+def curate_text(content):
+	''' curate text content '''
+
+	return content.encode('ascii','ignore').decode('utf-8') \
+		if type(content) == str else content
 
 def cleanup_text(message):
 	''' clean-up text '''
