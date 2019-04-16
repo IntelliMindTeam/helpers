@@ -79,7 +79,6 @@ def get_period(duration, period, units):
 		units = ( days | months | weeks )
 	'''
 
-	today = get_today()
 	end_date = get_today()
 
 	if units == 'days':

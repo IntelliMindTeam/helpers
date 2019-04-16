@@ -11,3 +11,4 @@ pymysql
 redis
 rethinkdb
 requests
+geopy
