@@ -11,7 +11,7 @@ requirements = []
 with open(requirements_path, 'r') as fp:
     for line in fp:
         line = line.strip()
-        if line.startswith('#'):
+        if line.startswith('#') or line == '':
             continue
         requirements.append(line.strip())
 
