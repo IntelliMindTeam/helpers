@@ -14,6 +14,7 @@ from helpers.exception import exception_handler
 
 logger = get_logger('s3')
 
+@exception_handler(False)
 def upload_to_s3(bucket_name, local_source_path, remote_target_path,\
 	is_dir=False):
 	''' Uploading given file or dir to s3 bucket'
@@ -74,8 +75,10 @@ def upload_to_s3(bucket_name, local_source_path, remote_target_path,\
 			raise Exception('Error while uploading file - {} :: {}'.format(\
 				local_source_path, ex))
 
+	return True
+
 @exception_handler([])
-def get_sub_dirs(start_date, end_date, source_dir, format):
+def get_sub_dirs(start_date, end_date, source_dir, format='%Y-%m-%d'):
 	''' returns list of sub_directories based on given date range
 
 		source_dir : local source directory path
@@ -96,25 +99,37 @@ def get_sub_dirs(start_date, end_date, source_dir, format):
 
 	if not (start_date or end_date):
 		# default sub_dir as of today's date
-		yield datetime.datetime.now().strftime(format)
+		try:
+			today = datetime.datetime.now().strftime(format)
+			if os.path.isdir(os.path.join(source_dir, today)):
+				yield today
+		except:
+			return []
 
 	elif start_date and (not end_date):
 
 		start_date = datetime.datetime.strptime(start_date, format)
 
-		for sub_dir in sorted(os.listdir(source_dir)):
-			if not os.path.isdir(sub_dir): continue
-			date = datetime.datetime.strptime(sub_dir, format)
-			if date >= start_date: yield date.strftime(format)
+		for sub_dir in sorted(os.listdir(source_dir), reverse=True):
+			try:
+				if not os.path.isdir(os.path.join(source_dir, sub_dir)): continue
+				date = datetime.datetime.strptime(sub_dir, format)
+				if date >= start_date: yield date.strftime(format)
+			except:
+				continue
 
 	elif (not start_date) and end_date:
 
 		end_date = datetime.datetime.strptime(end_date, format)
 
 		for sub_dir in sorted(os.listdir(source_dir)):
-			if not os.path.isdir(sub_dir): continue
-			date = datetime.datetime.strptime(sub_dir, format)
-			if date <= end_date: yield date.strftime(format)
+			try:
+				if not os.path.isdir(os.path.join(source_dir, sub_dir)): continue
+				date = datetime.datetime.strptime(sub_dir, format)
+				if date <= end_date: yield date.strftime(format)
+			except:
+				continue
+
 	else:
 
 		# both dates are given
@@ -122,9 +137,12 @@ def get_sub_dirs(start_date, end_date, source_dir, format):
 		end_date = datetime.datetime.strptime(end_date, format)
 
 		for sub_dir in sorted(os.listdir(source_dir)):
-			if not os.path.isdir(sub_dir): continue
-			date = datetime.datetime.strptime(sub_dir, format)
-			if start_date <= date <= end_date: yield date.strftime(format)
+			try:
+				if not os.path.isdir(os.path.join(source_dir, sub_dir)): continue
+				date = datetime.datetime.strptime(sub_dir, format)
+				if start_date <= date <= end_date: yield date.strftime(format)
+			except:
+				continue
 
 @exception_handler()
 def backup_to_s3(bucket_name, source_dir, dest_dir, \
@@ -171,8 +189,19 @@ def backup_to_s3(bucket_name, source_dir, dest_dir, \
 			str(dir_date.year),
 			str(dir_date.month),
 		)
-		upload_to_s3(bucket_name, local_source_path, remote_target_path)
-		os.remove(local_source_path) # removing zip file
+		uploaded = upload_to_s3(bucket_name, local_source_path, remote_target_path)
+
+		if uploaded:
+			# removing original folder
+			if delete_local and os.path.exists(source_dir_path):
+				shutil.rmtree(source_dir_path)
+			logger.info('Directory Uploaded: %s' % source_dir_path)
+		else:
+			logger.error('Error in uploading file: %s' % local_source_path)
+
+		# removing zip file
+		if os.path.exists(local_source_path): os.remove(local_source_path)
+
 
 def get_matching_s3_keys(bucket, prefix='', suffix=''):
 	"""
@@ -277,6 +306,7 @@ def download_files_by_date_range(bucket_name, remote_source_dir, \
 
 	for key in get_file_paths(**kargs):
 
+		os.makedirs(local_target_dir, exist_ok=True)
 		local_file_path = os.path.join(local_target_dir,\
 			os.path.basename(key))
 
