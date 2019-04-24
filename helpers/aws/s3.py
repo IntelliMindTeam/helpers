@@ -5,6 +5,7 @@ import sys
 import shutil
 import datetime
 import uuid
+import tarfile
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
@@ -222,6 +223,27 @@ def get_file_paths(remote_source_dir, start_date, end_date,\
 			file_name,
 		)
 
+@exception_handler()
+def extract_file(filepath):
+	''' extracting given compressed file at given same location '''
+
+	file_type = None
+	if filepath.endswith('tar.gz'): file_type = 'r:gz'
+	elif filepath.endswith('tar'): file_type = 'r:'
+	else:
+		logger.warning('File extention not supported for extraction: %s' \
+			% filepath)
+		return
+
+	# extracting file
+	with tarfile.open(filepath, file_type) as tar:
+		# removing compression extention
+		dir_path = filepath[:filepath.find('.')]
+		tar.extractall(path=dir_path)
+
+	# removing compressed file
+	os.remove(filepath)
+
 def download_files_by_date_range(bucket_name, remote_source_dir, \
 	local_target_dir, start_date, end_date, \
 	date_format='%Y-%m-%d', suffix='.tar.gz'):
@@ -260,8 +282,11 @@ def download_files_by_date_range(bucket_name, remote_source_dir, \
 
 		# download only if file exists else continue
 		try:
-			logger.info('Checking for key : %s' % str(key))
+			logger.info('Processing file: %s' % str(key))
+			logger.info('Checking for remote availability ...')
 			bucket.download_file(key, local_file_path)
+			extract_file(local_file_path)
+			logger.info('File downloaded')
 		except:
 			continue
 
