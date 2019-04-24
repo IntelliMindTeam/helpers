@@ -9,6 +9,7 @@ import uuid
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from log import get_logger
+from helpers.exception import exception_handler
 
 logger = get_logger('s3')
 
@@ -72,8 +73,61 @@ def upload_to_s3(bucket_name, local_source_path, remote_target_path,\
 			raise Exception('Error while uploading file - {} :: {}'.format(\
 				local_source_path, ex))
 
+@exception_handler([])
+def get_sub_dirs(start_date, end_date, source_dir, format):
+	''' returns list of sub_directories based on given date range
+
+		source_dir : local source directory path
+		format : local sub-directory naming format
+		start_date: starting date of sub directory
+		end_date:	ending date of sub directory
+
+		sub_directory selection criteria
+		(Note: All dates are considered inclusive)
+
+		start_date 	-	end_date
+
+		None 		-		None 		- default today's date
+		YYYY-mm-dd	-		None		- start_date to all next
+		None 		-		YYYY-mm-dd	- all previous till end_date
+		YYYY-mm-dd	-		YYYY-mm-dd  - date range
+	'''
+
+	if not (start_date or end_date):
+		# default sub_dir as of today's date
+		yield datetime.datetime.now().strftime(format)
+
+	elif start_date and (not end_date):
+
+		start_date = datetime.datetime.strptime(start_date, format)
+
+		for sub_dir in sorted(os.listdir(source_dir)):
+			if not os.path.isdir(sub_dir): continue
+			date = datetime.datetime.strptime(sub_dir, format)
+			if date >= start_date: yield date.strftime(format)
+
+	elif (not start_date) and end_date:
+
+		end_date = datetime.datetime.strptime(end_date, format)
+
+		for sub_dir in sorted(os.listdir(source_dir)):
+			if not os.path.isdir(sub_dir): continue
+			date = datetime.datetime.strptime(sub_dir, format)
+			if date <= end_date: yield date.strftime(format)
+	else:
+
+		# both dates are given
+		start_date = datetime.datetime.strptime(start_date, format)
+		end_date = datetime.datetime.strptime(end_date, format)
+
+		for sub_dir in sorted(os.listdir(source_dir)):
+			if not os.path.isdir(sub_dir): continue
+			date = datetime.datetime.strptime(sub_dir, format)
+			if start_date <= date <= end_date: yield date.strftime(format)
+
+@exception_handler()
 def backup_to_s3(bucket_name, source_dir, dest_dir, \
-	format='%Y-%m-%d', sub_dir=None):
+	start_date=None, end_date=None, format='%Y-%m-%d', delete_local=False):
 	'''
 		To create zipped s3-backup of sub-directory
 		that has name as todays's date
@@ -84,43 +138,40 @@ def backup_to_s3(bucket_name, source_dir, dest_dir, \
 		source_dir : local source directory path
 		dest_dir : remote destination directory path
 		format : local sub-directory naming format
-		sub_dir	: sub-directory to be zipped 
-				  (default sub_dir will be of today's date name)
+		delete_local : deleting local directory after successful upload
+		start_date: starting date of sub directory
+		end_date:	ending date of sub directory
+
+		sub_directory selection criteria
+		(Note: All dates are considered inclusive)
+
+			start_date 	-	end_date
+
+			None 		-		None 		- default today's date
+			YYYY-mm-dd	-		None		- start_date to all next
+			None 		-		YYYY-mm-dd	- all previous till end_date
+			YYYY-mm-dd	-		YYYY-mm-dd  - date range
 
 	'''
 
-	if not sub_dir:
-		# default sub_dir as of today's date
-		try:
-			sub_dir = datetime.datetime.now().strftime(format)
-		except:
-			raise Exception('invalid date-format')
+	for sub_dir in get_sub_dirs(start_date, end_date, source_dir, format):
 
-	source_dir_path = os.path.join(source_dir, sub_dir)
-	if not os.path.exists(source_dir_path):
-		return
+		source_dir_path = os.path.join(source_dir, sub_dir)
 
-	# create local archive
-	shutil.make_archive(source_dir_path, 'gztar', source_dir_path)
-	local_source_path = '{}.tar.gz'.format(source_dir_path)
+		# create local archive
+		shutil.make_archive(source_dir_path, 'gztar', source_dir_path)
+		local_source_path = '{}.tar.gz'.format(source_dir_path)
 
-	# creating remote path
-	try:
+		# creating remote path
 		dir_date = datetime.datetime.strptime(sub_dir, format)
-	except:
-		raise Exception('invalid date formate of sub-directory')
 
-	remote_target_path = os.path.join(
-		dest_dir,
-		str(dir_date.year),
-		str(dir_date.month),
-	)
-
-	upload_to_s3(bucket_name, local_source_path, remote_target_path)
-
-	# removing zip file
-	os.remove(local_source_path)
-
+		remote_target_path = os.path.join(
+			dest_dir,
+			str(dir_date.year),
+			str(dir_date.month),
+		)
+		upload_to_s3(bucket_name, local_source_path, remote_target_path)
+		os.remove(local_source_path) # removing zip file
 
 def get_matching_s3_keys(bucket, prefix='', suffix=''):
 	"""
@@ -148,6 +199,7 @@ def get_matching_s3_keys(bucket, prefix='', suffix=''):
 		except KeyError:
 			break
 
+@exception_handler([])
 def get_file_paths(remote_source_dir, start_date, end_date,\
 	date_format='%Y-%m-%d', suffix='.tar.gz'):
 	''' It will yield final file paths '''
