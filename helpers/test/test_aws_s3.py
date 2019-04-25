@@ -12,6 +12,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../aws'
 from s3 import upload_to_s3
 from s3 import backup_to_s3
 from s3 import get_file_paths
+from s3 import get_sub_dirs
 
 class TestAwsS3(unittest.TestCase):
 
@@ -34,7 +35,7 @@ class TestAwsS3(unittest.TestCase):
 			shutil.rmtree(self.temp_dir)
 
 	@patch('s3.boto3')
-	def atest_aws_s3_file_and_dir_uploading(self, mock_boto3):
+	def test_aws_s3_file_and_dir_uploading(self, mock_boto3):
 		''' To test aws s3 files uploading works as expected'''
 
 		mock_client = MagicMock()
@@ -81,7 +82,7 @@ class TestAwsS3(unittest.TestCase):
 
 	@patch('s3.upload_to_s3')
 	def test_backup_to_s3(self, mock_upload_to_s3):
-		''' testing backup to s3 capability '''
+		''' To test backup to s3 capability '''
 
 		# creating today date dir structure
 
@@ -126,7 +127,8 @@ class TestAwsS3(unittest.TestCase):
 		remote_path = '/xyz/2018/2'
 		bucket_name = 'bucket_name'
 
-		backup_to_s3(bucket_name, self.temp_dir, dest_dir, sub_dir=sub_dir_name)
+		backup_to_s3(bucket_name, self.temp_dir, dest_dir, \
+			start_date=sub_dir_name, end_date=sub_dir_name)
 
 		mock_upload_to_s3.assert_called_with(
 			bucket_name,
@@ -153,3 +155,40 @@ class TestAwsS3(unittest.TestCase):
 		# taking all output at once as it is generator
 		res = list(res)
 		self.assertEqual(res, expected_res)
+
+	def test_get_sub_dirs(self):
+		''' To test getting sub_dirs based on date range '''
+
+		today = str(datetime.datetime.now().date())
+		os.makedirs(os.path.join(self.temp_dir, today), exist_ok=True)
+		os.makedirs(os.path.join(self.temp_dir, '2010-01-01'), exist_ok=True)
+		os.makedirs(os.path.join(self.temp_dir, '2010-01-02'), exist_ok=True)
+		os.makedirs(os.path.join(self.temp_dir, '2010-01-03'), exist_ok=True)
+
+		kargs = {
+			'start_date': '2010-01-01',
+			'end_date': '2010-01-02',
+			'source_dir': self.temp_dir,
+		}
+
+		expected = ['2010-01-01', '2010-01-02']
+		response = list(get_sub_dirs(**kargs))
+		self.assertEqual(sorted(response), sorted(expected))
+
+		kargs['start_date'] = '2010-01-02'
+		kargs['end_date'] = None
+		expected = ['2010-01-02', '2010-01-03', today]
+		response = list(get_sub_dirs(**kargs))
+		self.assertEqual(sorted(response), sorted(expected))
+
+		kargs['start_date'] = None
+		kargs['end_date'] = '2010-01-02'
+		expected = ['2010-01-01', '2010-01-02']
+		response = list(get_sub_dirs(**kargs))
+		self.assertEqual(sorted(response), sorted(expected))
+
+		kargs['start_date'] = None
+		kargs['end_date'] = None
+		expected = [today,]
+		response = list(get_sub_dirs(**kargs))
+		self.assertEqual(sorted(response), sorted(expected))
