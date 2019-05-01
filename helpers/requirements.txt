@@ -9,6 +9,6 @@ mock
 pandas
 pymysql
 redis
-rethinkdb
+rethinkdb==2.3.0.post6
 requests
 geopy
