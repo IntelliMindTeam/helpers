@@ -42,18 +42,33 @@ class TestCalendar(unittest.TestCase):
 
 		self.assertEqual(set(response_dates), set(expected_dates))
 
-	def test_adjust_today(self):
+	@patch('icalendar.get_today')
+	def test_adjust_today(self, patched_today):
 		''' To test adjusted today date '''
 
-		year = 2
-		month = 1
-		day = 1
+		patched_today.return_value = datetime.date(2019, 5, 3)
+		year, month, day = (2, 1, 1)
 
-		td = datetime.datetime.now().date()
-		expected_date = datetime.date(td.year + year, td.month + month, td.day + day)
-
+		expected_date = datetime.date(2021, 6, 4)
 		response_date = icalendar.adjust_today(year, month, day)
+		self.assertEqual(response_date, expected_date)
 
+		# test case II
+		year, month, day = (0, 0, 31)
+		expected_date = datetime.date(2019, 5, 31)
+		response_date = icalendar.adjust_today(year, month, day)
+		self.assertEqual(response_date, expected_date)
+
+		# test case III
+		year, month, day = (0, 0, -5)
+		expected_date = datetime.date(2019, 5, 1)
+		response_date = icalendar.adjust_today(year, month, day)
+		self.assertEqual(response_date, expected_date)
+
+		# test case IV
+		year, month, day = (0, 15, 0)
+		expected_date = datetime.date(2019, 8, 3)
+		response_date = icalendar.adjust_today(year, month, day)
 		self.assertEqual(response_date, expected_date)
 
 	@patch('icalendar.get_today')

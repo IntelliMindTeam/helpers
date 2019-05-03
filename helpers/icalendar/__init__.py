@@ -4,6 +4,9 @@ import os
 
 from bdateutil import relativedelta
 from datetime import timedelta
+
+from calendar import monthrange
+
 from pytz import timezone
 
 def get_first_day_of_month():
@@ -36,10 +39,22 @@ def adjust_today(y, m, d):
 	# get today's date
 	dt = get_today()
 
-	# adjust according to delta
+	# adjust month (floor and ceiling check)
+	total_months = (dt.month + m) % 12 if dt.month + m > 12 else dt.month + m
+	total_months = 1 if total_months < 0 else total_months
+
+	# adjust ceiling
+	(fdw, no_of_days) = monthrange(dt.year, dt.month)
+	total_days = no_of_days if dt.day + d > no_of_days else dt.day + d
+
+	(ffdw, no_of_days) = monthrange(dt.year + y, total_months)
+	total_days = no_of_days if dt.day + d > no_of_days else dt.day + d
+
+	# adjust floor
+	total_days = 1 if total_days <= 0 else total_days
+
 	try:
-		
-		adjusted_date = datetime.date(dt.year + y, dt.month + m , dt.day + d)
+		adjusted_date = datetime.date(dt.year + y, total_months, total_days)
 	except:
 		raise Exception('invalid offset')	
 
