@@ -1,5 +1,6 @@
 import datetime
 import holidays
+import numpy as np
 import os
 
 from bdateutil import relativedelta
@@ -106,3 +107,18 @@ def get_period(duration, period, units):
 		start_date = end_date + relativedelta(bdays=period * 5, holidays=holidays.US())
 
 	return str(start_date), str(end_date)
+
+
+def convert_timestamp(series, column):
+	''' convert timestamp to milliseconds '''
+
+	if series[column].dtype == np.dtype('float64'):
+		series[column] = series[column].astype('int64') * 1e3
+	elif series[column].dtype == np.dtype('<M8[ns]'):
+		series[column] = series[column].astype('int64')/1e6
+	elif series[column].dtype == np.dtype('<M8[us]'):
+		series[column] = series[column].astype('int64')/1e3
+	elif series[column].dtype == np.dtype('<M8[ms]'):
+		series[column] = series[column].astype('int64')
+
+	return series[column]
