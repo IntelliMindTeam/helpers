@@ -27,3 +27,14 @@ It will return today's date adjusted with given year, month, and day
 	* remote_target_path : remote s3 bucket path of file / directory to store
 	* bucekt_name : name of bucket in s3 that should exist
 	* is_dir : is given local_source path is of directory ? (True / False)
+
+## Contributors
+
+**Abhishek Chander**
+
+abhishek@intellimind.io
+
+
+## License
+
+Copyright(s) 2020 IntelliMind LLC
