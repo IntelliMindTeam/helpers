@@ -64,7 +64,7 @@ def get_rabbit_connection(config):
 def get_mongo_connection(config):
 	return pymongo.MongoClient(
 		host=config.get("MONGODB", "MONGO_HOST"),
-		port=config.get("MONGODB", "MONGO_PORT"),
+		port=int(config.get("MONGODB", "MONGO_PORT")),
 		username=config.get("MONGODB", "MONGO_USER"),
 		password=config.get("MONGODB", "MONGO_PASSWORD"),
 		authSource="admin",
