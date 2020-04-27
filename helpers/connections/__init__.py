@@ -1,16 +1,38 @@
 import arctic
+import pymongo
 import pymysql
 import rethinkdb as r
 import redis
 import pika
 import pymongo
 
+from arctic.auth import authenticate
 
 def get_arctic_store(config):
 	""" get arctic connection """
 
 	return arctic.Arctic(config.get("MONGODB", "MONGO_SERVER"))
 
+
+def get_arctic_store_ex(config):
+	""" get arctic store """
+
+	store = None
+	try:
+		conn = pymongo.MongoClient(config.get("MONGODB", "MONGO_SERVER"))
+
+		# authenticate
+		auth = authenticate(conn[config.get("MONGODB", "MONGO_DATABASE")],\
+								config.get("MONGODB", "MONGO_USER"),\
+								config.get("MONGODB", "MONGO_PASSWORD"))
+		if auth == True:
+			store = arctic.Arctic(conn)
+
+	except Exception as ex:
+		print('Exception in getting arctic store {}'.format(str(ex.args)))
+
+	finally:
+		return store
 
 def get_mysql_connection(config):
 	""" get mysql connection """
