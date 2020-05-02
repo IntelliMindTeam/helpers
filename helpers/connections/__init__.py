@@ -45,6 +45,19 @@ def get_mysql_connection(config):
 	)
 
 
+def get_rethink_connection_ex(config):
+	""" get rethink db connection  """
+
+	rethink_conn = r.r.connect(
+		host=config.get("RETHINKDB", "RETHINK_HOST"),
+		port=config.get("RETHINKDB", "RETHINK_PORT"),
+		db=config.get("RETHINKDB", "RETHINK_DB"),
+		user=config.get("RETHINKDB", "RETHINK_USER"),
+		password=config.get("RETHINKDB", "RETHINK_PASSWORD"),
+		timeout=int(config.get("RETHINKDB", "RETHINK_TIMEOUT")),
+	)
+	return rethink_conn
+
 def get_rethink_connection(config):
 	""" get rethink db connection  """
 
