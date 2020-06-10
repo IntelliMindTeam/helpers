@@ -1,7 +1,7 @@
 import arctic
 import pymongo
 import pymysql
-import rethinkdb as r
+from rethinkdb import r
 import redis
 import pika
 import pymongo
@@ -48,7 +48,7 @@ def get_mysql_connection(config):
 def get_rethink_connection_ex(config):
 	""" get rethink db connection  """
 
-	rethink_conn = r.r.connect(
+	rethink_conn = r.connect(
 		host=config.get("RETHINKDB", "RETHINK_HOST"),
 		port=config.get("RETHINKDB", "RETHINK_PORT"),
 		db=config.get("RETHINKDB", "RETHINK_DB"),
