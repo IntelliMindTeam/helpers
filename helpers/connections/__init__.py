@@ -40,8 +40,8 @@ def get_mysql_connection(config):
 	return pymysql.connect(
 		host=config.get("MYSQL", "MYSQL_HOST"),
 		user=config.get("MYSQL", "MYSQL_USER"),
-		passwd=config.get("MYSQL", "MYSQL_PASSWD"),
-		db=config.get("MYSQL", "MYSQL_DATABASE"),
+		password=config.get("MYSQL", "MYSQL_PASSWD"),
+		database=config.get("MYSQL", "MYSQL_DATABASE"),
 	)
 
 
